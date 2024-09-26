@@ -17,6 +17,10 @@ const UserSchema=mongoose.Schema({
         type:String,
         require:true,
         trim:true
+    },
+    api_key:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Api_Key'
     }
 });
 

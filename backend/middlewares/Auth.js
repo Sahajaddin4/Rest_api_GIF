@@ -1,9 +1,11 @@
 const jwt=require('jsonwebtoken');
+const ApiKey_model = require('../models/ApiKey_model');
 require('dotenv').config();
 
 const Auth=async(req,res,next)=>{
 
-    const {token}=req.body || req.cookies || req.headers.Authorization.split(' ')[1];
+   try {
+    const token=req.body.token || req.cookies.token 
 
     //validation
     if(!token){
@@ -14,8 +16,19 @@ const Auth=async(req,res,next)=>{
     }
     //decode token
     let decode=jwt.verify(token,process.env.JWT_SECRET);
-    req.user=decode.email;
+    
+    req.user=decode.id;
+
     next();
+    
+   } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+        message:'Internal server error at Auth middlewares 😔',
+        success:false,
+        error:error
+    });
+   }
 }
 
 module.exports=Auth;

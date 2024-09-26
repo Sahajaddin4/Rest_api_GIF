@@ -1,6 +1,7 @@
 const User=require('../models/User_Model');
 const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
+const ApiKey_model = require('../models/ApiKey_model');
 require('dotenv').config();
 //user account creation
 exports.Signup=async(req,res)=>{
@@ -26,15 +27,32 @@ exports.Signup=async(req,res)=>{
 
         //if user not exists 
         const hashPassword=await bcrypt.hash(password,10);
-
+        
+        
         //create account 
-        await User.create({
+        const newUser=await User.create({
             name,
             email,
-            password:hashPassword
+            password:hashPassword,
+            api_key:null
+        });
+        //create api key with null
+        let apiKeyId=await ApiKey_model.create({
+            user:newUser._id,
+            key:null
         });
 
+        //update User db
+        newUser.api_key=apiKeyId._id;
+        let response=await newUser.save();
         //success response
+        if(!response)
+        {
+            return res.status(403).json({
+                success:false,
+                message:'Error faced to create account!!'
+            })
+        }
         return res.status(201).json({
             success:true,
             message:'Account creation successfull 😍'
