@@ -1,6 +1,9 @@
 import React from 'react'
+import integration, { response } from './Integrationcode'
 
 function Code() {
+  const newIntegration=integration.split(/[,;]+/);
+  const newResponse=response.split(',');
   return (
    <div className='flex ga-10 p-2'>
     {/* Code for integrating */}
@@ -22,8 +25,7 @@ function Code() {
             on your needs (random GIF or tag-specific GIF).
           </li>
           <li>
-            <h2>Make a Request:</h2> Use your preferred programming language to
-            make requests to the API. Below is an example in JavaScript using
+            <h2>Make a Request:</h2> Use Javascript and express framework .Right part  is an example in JavaScript using
             axios:
           </li>
         </ol>
@@ -32,10 +34,18 @@ function Code() {
         </div>
       </div>
     {/* Codes */}
-    <div className="codes bg-gray-700 w-full ">
+    <div className="codes bg-gray-800 w-full flex flex-col gap-10 text-white overflow-y-auto h-[80vh]">
          <div className="heading bg-black shadow-lg py-3 px-2">
           <h1 className='text-slate-200'>JavaScript</h1>
          </div>
+         <div className=' p-2'>
+          <h1 className='text-blue-600 text-3xl mb-5'>Integration Method:</h1>
+            {newIntegration.map((line,index)=>{return <p key={index} className='text-white p-2'>{line}</p>})}
+          </div>
+          <div className="response p-2 border-t-2">
+            <h1 className='text-3xl text-green-600 mb-5'>Response:</h1>
+              {newResponse.map((line,index)=>{return <p key={index} className='text-white p-2'>{line}</p>})}
+          </div>
     </div>
    </div>
   )

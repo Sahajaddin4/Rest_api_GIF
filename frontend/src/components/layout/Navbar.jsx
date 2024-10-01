@@ -39,9 +39,7 @@ function Navbar() {
           <li>
             <NavLink to="/about">About us</NavLink>
           </li>
-          <li>
-            <NavLink to="/contact">Contact us</NavLink>
-          </li>
+        
           {isAuthenticated ? (
             <>
               <DropDown />

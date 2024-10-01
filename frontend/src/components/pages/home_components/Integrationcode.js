@@ -1,67 +1,41 @@
 const integration=`
- const axios=require('axios');
-const Api_Key=require('../models/ApiKey_model');
-const GetGif=async(req,res)=>{
-   try {
-    const API_KEY= req.headers['api_key']
-    
-    
-    const tag=req.body.tag;
-    //validation
-    if(!API_KEY)
-    {
-        return res.status(401).json({
-            success:false,
-            message:'Subscribe first to use api.'
-        });
-    }
+ const axios = require('axios');
 
-    //check api_key is correct or not
-    let isCorrect=await Api_Key.findOne({
-        user:req.user,
-        key:API_KEY
+const fetchGif = async () => {
+  try {
+    const response = await axios.get('https://your-api-domain.com/get-gif', {
+      headers: {
+        'api_key': 'YOUR_API_KEY',
+      },
+      params: {
+        tag: 'funny',  // Optional tag, can be omitted for a random GIF
+      },
     });
-    if(!isCorrect)
-    {
-        return res.status(404).json({
-            success:false,
-            message:'API_KEY is not matched .'
-        });
-    }
 
-    let url=tag?process.env.API_URL+process.env.API_KEY+'&tag='+tag:process.env.API_URL+process.env.API_KEY;
-    
-    let response=await axios.get(url,{
-        headers:{
-            'Content-type':'application/json, text/plain, */*'
-        }
-    },{timeout:5000});
-    if(!response)
-    {
-        return res.status(504).json({
-            success:false,
-            message:'Request time out.'
-        });
+    if (response.data.success) {
+      console.log('GIF URL:', response.data.image);
+    } else {
+      console.error('Error:', response.data.message);
     }
-    //console.log(response);
-    
-     let imageUrl=response.data.data.images.downsized.url;
-    return res.status(200).json({
-        message:'GIf fetched successfully',
-        image:imageUrl
-    })
-   }
-    catch (error) {
-    console.log(error);
-    return res.status(500).json({
-        message:'Internal server error at Get_GIF 😔',
-        success:false,
-        error:error
-    });
-   }
-}
+  } catch (error) {
+    console.error('Error fetching GIF:', error);
+  }
+};
 
-module.exports=GetGif; 
+fetchGif();
+
     `
 
     export default integration;
+
+
+const response=`
+{
+  "success": true,
+  "message": "GIF fetched successfully",
+  "image": "https://media.giphy.com/media/xyz.gif"
+}
+
+`
+
+export {response};
