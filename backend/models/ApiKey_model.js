@@ -9,8 +9,6 @@ const ApiSchema=mongoose.Schema({
    key:{
     type:String,
     default:null,
-    trim:true,
-    unique: true
    }
 });
 

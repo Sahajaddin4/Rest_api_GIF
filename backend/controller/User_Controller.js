@@ -39,7 +39,7 @@ exports.Signup=async(req,res)=>{
         //create api key with null
         let apiKeyId=await ApiKey_model.create({
             user:newUser._id,
-            key:null
+            
         });
 
         //update User db
@@ -62,7 +62,7 @@ exports.Signup=async(req,res)=>{
        console.log(error);
         return res.status(500).json({
             message:'Internal server error at user signup',
-            success:false,
+            success:false, 
             error:error
         });
     }
@@ -74,6 +74,7 @@ exports.Signup=async(req,res)=>{
 exports.Login=async(req,res)=>{
     try {
         const{email,password}=req.body;
+        
           //validation
         if(!email || !password) {
             return res.status(400).json({
@@ -81,7 +82,7 @@ exports.Login=async(req,res)=>{
                 message:'Please fill all details correctly! 😊'
             })
         };
-
+    
         //Check user is  exists or not
         let user=await User.findOne({email:email});
         if(!user){
@@ -103,20 +104,82 @@ exports.Login=async(req,res)=>{
 
         //jwt token create
         const payload={
+            name:user.name,
             email:user.email,
             id:user._id,
         }
 
         const token= jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:'1h'});
-        res.cookie('token',token);
+        res.cookie('token',token,{
+            httpOnly:true,
+            maxAge:3600*1000
+        });
         return res.status(200).json({
             success:true,
+            user:user.name,
             message:'Login successful 😍'
         })
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             message:'Internal server error at user login 😔',
+            success:false,
+            error:error
+        });
+    }
+};
+
+
+//check auth
+exports.checkAuth=async(req,res)=>{
+    try {
+        const{token}=req.cookies;
+          //validation
+        if(!token) {
+            return res.status(400).json({
+                success:false,
+                isAuthenticated:false,
+                message:'Login to your account first..'
+            })
+        };
+
+       
+        const user= jwt.verify(token,process.env.JWT_SECRET);
+      
+       
+        return res.status(200).json({
+            success:true,
+            user:user.name,
+            isAuthenticated:true,
+            
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message:'Internal server error at check authentication 😔',
+            success:false,
+            error:error
+        });
+    }
+};
+
+
+//logout
+exports.logOut=async(req,res)=>{
+    try {
+       
+        res.clearCookie('token',{
+            httpOnly:true
+        });
+        res.status(200).json({
+            message:'logout successful',
+            success:true
+        })
+       
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message:'Internal server error at Logout 😔',
             success:false,
             error:error
         });

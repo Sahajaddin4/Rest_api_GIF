@@ -31,16 +31,16 @@ exports.createApiKey=async(req,res)=>{
         });
     }
     //create api key
-    let key= uuidv4(); 
-    let isKeyExists=await Api_Key.findOne({key:key});
+    let newKey= uuidv4(); 
+    let isKeyExists=await Api_Key.findOne({key:newKey});
     while(isKeyExists)
     {
-        key=uuidv4();
-        isKeyExists=await Api_Key.findOne({key:key});
+        newKey=uuidv4();
+        isKeyExists=await Api_Key.findOne({key:newKey});
     }
-    //check userId is valid or not
+    //Update api key
     let apiKey=await Api_Key.findOneAndUpdate({user:userId},{
-        key:key
+        key:newKey
     },{new:true});
  
 
